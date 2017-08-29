@@ -132,6 +132,10 @@ class DESMEDSMakerDESDM(DESMEDSMaker):
         # probably from from header MAGZERO
         cf['magzp']     = fd['coadd_magzp']
 
+        #if (not self['coadd_only']):
+        #    cf['srclist'] = self._load_srclist()
+        #else:
+        #    cf['srclist'] = None
         cf['srclist'] = self._load_srclist()
 
         # In this case, we can use refband==input band, since
@@ -165,8 +169,12 @@ class DESMEDSMakerDESDM(DESMEDSMaker):
         get all the necessary information for each source image
         """
         # this is a list of dicts
+        if (self['coadd_only']):
+            return []
+
         srclist=self._load_nwgint_info()
         nepoch = len(srclist)
+
 
         # now add in the other file types
         bkg_info=self._read_generic_flist('bkg_flist')
@@ -380,12 +388,15 @@ class Preparator(dict):
         self['tilename']=tilename
         self['band']=band
 
-        csrc=CoaddSrc(
-            self['medsconf'],
-            self['tilename'],
-            self['band'],
-            campaign=self['campaign'],
-        )
+        if (not self['coadd_only']):
+            csrc=CoaddSrc(
+                self['medsconf'],
+                self['tilename'],
+                self['band'],
+                campaign=self['campaign'],
+                )
+        else:
+            csrc=None
 
         self.coadd=Coadd(
             self['medsconf'],
@@ -410,13 +421,16 @@ class Preparator(dict):
 
         self._make_objmap(info)
         self._copy_psfs(info)
-        self._make_nullwt(info)
+
+        if (not self['coadd_only']):
+            self._make_nullwt(info)
 
         fileconf=self._write_file_config(info)
 
-        self._write_nullwt_flist(info['src_info'], fileconf)
-        self._write_seg_flist(info['src_info'], fileconf)
-        self._write_bkg_flist(info['src_info'], fileconf)
+        if (not self['coadd_only']):
+            self._write_nullwt_flist(info['src_info'], fileconf)
+            self._write_seg_flist(info['src_info'], fileconf)
+            self._write_bkg_flist(info['src_info'], fileconf)
 
     def clean(self):
         """
@@ -621,8 +635,9 @@ class Preparator(dict):
         psfs = []
         psfs.append(info['psf_path'])
 
-        for sinfo in info['src_info']:
-            psfs.append(sinfo['psf_path'])
+        if (not self['coadd_only']):
+            for sinfo in info['src_info']:
+                psfs.append(sinfo['psf_path'])
 
         return psfs
 
