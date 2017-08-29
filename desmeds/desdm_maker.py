@@ -362,6 +362,10 @@ class DESMEDSMakerDESDM(DESMEDSMaker):
                 maker.write(sf.path)
 
     def _fpack_file(self, fname):
+        fzfile=fname+'.fz'
+        if os.path.exists(fzfile):
+            os.remove(fzfile)
+
         cmd='fpack %s' % fname
         print("fpacking with command: '%s'" % cmd)
         subprocess.check_call(cmd,shell=True)
