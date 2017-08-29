@@ -69,4 +69,6 @@ default_config = {
 
     'coadd_seg_ext': 1,
 
+    'coadd_only': False,
+
 }
