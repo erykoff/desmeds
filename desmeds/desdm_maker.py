@@ -449,8 +449,10 @@ class Preparator(dict):
         """
         remove all the generated nullwt files
         """
-        print("removing nullwt images:",self['nullwt_dir'])
-        shutil.rmtree(self['nullwt_dir'])
+        if (os.path.exists(self['nullwt_dir'])):
+            print("removing nullwt images:",self['nullwt_dir'])
+            shutil.rmtree(self['nullwt_dir'])
+            
 
 
 
