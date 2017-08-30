@@ -641,7 +641,7 @@ class Preparator(dict):
         psfs = []
         psfs.append(info['psf_path'])
 
-        if (not self['coadd_only']):
+        if 'src_info' in info:
             for sinfo in info['src_info']:
                 psfs.append(sinfo['psf_path'])
 
